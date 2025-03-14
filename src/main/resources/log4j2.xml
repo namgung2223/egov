@@ -1,30 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE xml>
-<Configuration>
+<Configuration status="INFO">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %5p [%c] %m%n" />
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] %-5p [%c - %l] : %m%n" />
         </Console>
+
+        <!-- 전체 로그 확인용 -->
+        <RollingFile name="consoleFileAppender" fileName="D:/egov/logs/ConsoleLog/ConsoleLog.log" filePattern="D:/egov/logs/ConsoleLog/$${date:yyyy}/$${date:MM}/ConsoleLog_%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout>
+                <Pattern>[%d{yyyy-MM-dd HH:mm:ss}] %-5p [%c - %l] : %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+        </RollingFile>
+
+        <!-- Query 정보 File 기록 용 Appender. -->
+        <RollingFile name="queryFileAppender" fileName="D:/egov/logs/QueryLog/QueryLog.log" filePattern="D:/egov/logs/QueryLog/$${date:yyyy}/$${date:MM}/QueryLog_%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout>
+                <Pattern>[%d{yyyy-MM-dd HH:mm:ss}] %-5p [%c - %l] : %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5MB" />
+            </Policies>
+        </RollingFile>
+
+        <!-- Exception 정보 File 기록 용 Appender. -->
+        <RollingFile name="exceptionFileAppender" fileName="D:/egov/logs/ExceptionLog/ExceptionLog.log" filePattern="D:/egov/logs/ExceptionLog/$${date:yyyy}/$${date:MM}//ExceptionLog_%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout>
+                <Pattern>[%d{yyyy-MM-dd HH:mm:ss}] %-5p [%c - %l] : %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5MB" />
+            </Policies>
+        </RollingFile>
+
+        <!-- method 정보 File 기록 용 Appender. -->
+        <!-- 		<RollingFile name="methodFileAppender" fileName="D:/logs/MethodLog/MethodLog.log" filePattern="D:/logs/MethodLog/MethodLog.log.%d{yyyy-MM-dd}"> -->
+        <!-- 			<PatternLayout> -->
+        <!-- 				<Pattern>[%d{yyyy-MM-dd HH:mm:ss}] %-5p [%c - %l] : %m%n</Pattern> -->
+        <!-- 			</PatternLayout> -->
+        <!-- 			<Policies> -->
+        <!-- 				<TimeBasedTriggeringPolicy /> -->
+        <!-- 			</Policies> -->
+        <!-- 		</RollingFile> -->
     </Appenders>
+
     <Loggers>
-        <Logger name="java.sql" level="INFO" additivity="false">
+        <Logger name="org.springframework" level="info" additivity="false">
             <AppenderRef ref="console" />
         </Logger>
-        <Logger name="egovframework" level="DEBUG" additivity="false">
+
+        <logger name="jdbc.audit" level="off">
             <AppenderRef ref="console" />
+        </logger>
+        <logger name="jdbc.resultset" level="off">
+            <AppenderRef ref="console" />
+        </logger>
+        <logger name="jdbc.connection" level="off">
+            <AppenderRef ref="console" />
+        </logger>
+        <logger name="jdbc.resultsettable" level="off">
+            <AppenderRef ref="console" />
+        </logger>
+        <logger name="jdbc.resultsettable" level="off">
+            <AppenderRef ref="console" />
+        </logger>
+        <logger name="jdbc.sqltiming" level="off">
+            <appender-ref ref="console"/>
+        </logger>
+
+        <!-- excel export null data log -->
+        <!-- 	    <Logger name="org.apache.commons" level="error"> -->
+        <!-- 	        <AppenderRef ref="console" /> -->
+        <!-- 	    </Logger> -->
+        <!-- 	    <Logger name="net.sf.jxls" level="error"> -->
+        <!-- 	        <AppenderRef ref="console" /> -->
+        <!-- 	    </Logger> -->
+
+        <!-- 		<Logger name="jdbc.connection" level="error"> -->
+        <!-- 			<AppenderRef ref="console" /> -->
+        <!-- 		</Logger> -->
+        <!-- 		<Logger name="jdbc.audit" level="error"> -->
+        <!-- 			<AppenderRef ref="console" /> -->
+        <!-- 		</Logger> -->
+
+        <!-- 		<Logger name="jdbc.resultset" level="error"> -->
+        <!-- 			<AppenderRef ref="console" /> -->
+        <!-- 		</Logger> -->
+
+        <!-- Query 정보 Logger. Query String과 parameter 정보를 기록한다. -->
+        <!-- 	    <Logger name="jdbc.sqltiming" level="debug"> -->
+        <!-- 	        <AppenderRef ref="queryFileAppender" /> -->
+        <!-- 	    </Logger> -->
+        <logger name="jdbc.sqlonly" level="debug" additivity="false">
+            <appender-ref ref="console"/>
+            <AppenderRef ref="queryFileAppender" />
+
+        </logger>
+
+        <!-- 	    <Logger name="queryLogger" level="debug" additivity="false"> -->
+        <!-- 	        <AppenderRef ref="console" /> -->
+        <!-- 	        <AppenderRef ref="queryFileAppender" /> -->
+        <!-- 	    </Logger> -->
+
+        <!-- Exception 정보 Logger. 응답 시간 정보와 전문 정보, Exception 정보를 기록한다. -->
+        <Logger name="exceptionLogger" level="error" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="exceptionFileAppender" />
         </Logger>
-        <Logger name="org.egovframe" level="DEBUG" additivity="false">
+
+        <!-- method 실행 정보 Logger. method 수행 시 In/Out 정보를 기록한다. -->
+        <!-- 		<Logger name="methodLogger" level="debug" additivity="false"> -->
+        <!-- 			<AppenderRef ref="methodFileAppender" /> -->
+        <!-- 		</Logger> -->
+
+        <!-- Default Logger. -->
+        <Logger name="defaultLogger" level="debug" additivity="false">
             <AppenderRef ref="console" />
+            <!-- 			 <AppenderRef ref="consoleFileAppender" /> -->
         </Logger>
-          <!-- log SQL with timing information, post execution -->
-        <Logger name="jdbc.sqltiming" level="INFO" additivity="false">
+
+        <Root level="debug">
             <AppenderRef ref="console" />
-        </Logger>
-        <Logger name="org.springframework" level="INFO" additivity="false">
-            <AppenderRef ref="console" />
-        </Logger>
-        <Root level="INFO">
-            <AppenderRef ref="console" />
+            <AppenderRef ref="consoleFileAppender" />
         </Root>
     </Loggers>
 </Configuration>
